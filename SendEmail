@@ -28,9 +28,9 @@
           server.sendmail(sender_email, receiver_email, message.as_string())
 
   if __name__ == "__main__":
-      sender_email = ""
+      sender_email = "kkobung82@gmail.com"
       receiver_email = "ahnjs252002@gmail.com"
-      app_password = "xxx"
+      app_password = "slgt zwrr tgpl sycb"
  
       subject = "Practice1"
       text = "Hi."
