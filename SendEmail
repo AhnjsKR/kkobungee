@@ -1,16 +1,18 @@
+"""
+KKOBUNGEE
+"""
 
-  """
-  KKOBUNGEE
-  """
-
-  __author__ = "AhnJungSun"
-  __version__ = "0.3.0"
-  __license__ = "NONE"
+__author__ = "AhnJungSun"
+__version__ = "0.5.0"
+__license__ = "NONE"
 
 import requests
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from bs4 import BeautifulSoup
+from datetime import datetime
+
 
 def get_weather(api_key, city):
     base_url = "http://api.openweathermap.org/data/2.5/weather"
@@ -30,6 +32,25 @@ def get_weather(api_key, city):
     else:
         return '날씨 정보를 가져오는 데 실패했습니다.'
 
+
+def get_news():
+    url = "https://news.naver.com/main/list.nhn?mode=LSD&mid=sec&sid1=100"
+    response = requests.get(url)
+    html = response.text
+    soup = BeautifulSoup(html, 'html.parser')
+
+    articles = soup.select('.list_body > ul > li > dl')
+
+    news_list = []
+    for article in articles:
+        title = article.select_one('dt:not(.photo) > a').text
+        link = article.select_one('dt:not(.photo) > a')['href']
+        summary = article.select_one('dd').text.strip()
+        news_list.append({'title': title, 'link': link, 'summary': summary})
+
+    return news_list
+
+
 def send_email(sender_email, receiver_email, app_password, subject, text, html):
     message = MIMEMultipart("alternative")
     message["Subject"] = subject
@@ -46,18 +67,35 @@ def send_email(sender_email, receiver_email, app_password, subject, text, html):
         server.login(sender_email, app_password)
         server.sendmail(sender_email, receiver_email, message.as_string())
 
+
+def send_weather_and_news_email(sender_email, receiver_email, app_password, weather_info, news_list):
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    subject = f"{current_date} 오늘의 날씨 및 주요 뉴스"
+    text = f"오늘도 좋은 하루 보내세요!\n\n날씨 정보:\n{weather_info}\n\n"
+    text += "오늘의 주요 뉴스:\n"
+    for news in news_list:
+        text += f"{news['title']}\nLink: {news['link']}\nSummary: {news['summary']}\n\n"
+
+    html = f"<html><body><p>오늘도 좋은 하루 보내세요!<br><br>날씨 정보:<br>{weather_info}</p>"
+    html += "<p>오늘의 주요 뉴스:</p><ul>"
+    for news in news_list:
+        html += f"<li><a href='{news['link']}'>{news['title']}</a></li>"
+    html += "</ul></body></html>"
+
+    send_email(sender_email, receiver_email, app_password, subject, text, html)
+
+
 if __name__ == "__main__":
     sender_email = "kkobung82@gmail.com"
     receiver_email = "ahnjs252002@gmail.com"
-    app_password = ""
-    api_key = ""  # Replace with your actual API key
+    app_password = "slgt zwrr tgpl sycb"
+    api_key = "68d883c6f808e052920bea6a1e9001b2"  # Replace with your actual API key
     city = "Seoul"  # Replace with the city for which you want the weather information
 
     weather_info = get_weather(api_key, city)
+    news_list = get_news()
 
-    subject = "Practice3 - 오늘의 서울 날씨"
-    text = f"오늘도 좋은 하루 보내세요!. {weather_info}"
-    html = f"<html><body><p>오늘도 좋은 하루 보내세요! {weather_info}</p></body></html>"
-
-    send_email(sender_email, receiver_email, app_password, subject, text, html)
+    
+    #메일 보내기
+    send_weather_and_news_email(sender_email, receiver_email, app_password, weather_info, news_list)
 
