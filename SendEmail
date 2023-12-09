@@ -49,8 +49,8 @@ def send_email(sender_email, receiver_email, app_password, subject, text, html):
 if __name__ == "__main__":
     sender_email = "kkobung82@gmail.com"
     receiver_email = "ahnjs252002@gmail.com"
-    app_password = "slgt zwrr tgpl sycb"
-    api_key = "68d883c6f808e052920bea6a1e9001b2"  # Replace with your actual API key
+    app_password = ""
+    api_key = ""  # Replace with your actual API key
     city = "Seoul"  # Replace with the city for which you want the weather information
 
     weather_info = get_weather(api_key, city)
@@ -60,13 +60,4 @@ if __name__ == "__main__":
     html = f"<html><body><p>오늘도 좋은 하루 보내세요! {weather_info}</p></body></html>"
 
     send_email(sender_email, receiver_email, app_password, subject, text, html)
-  if __name__ == "__main__":
-      sender_email = "kkobung82@gmail.com"
-      receiver_email = "ahnjs252002@gmail.com"
-      app_password = "slgt zwrr tgpl sycb"
- 
-      subject = "Practice1"
-      text = "Hi."
-      html = f"<html><body><p>{text}</p></body></html>"
- 
-      send_email(sender_email, receiver_email, app_password, subject, text, html)
+
