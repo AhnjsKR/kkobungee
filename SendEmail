@@ -119,5 +119,16 @@ if __name__ == "__main__":
     lunch_recommendation_info = lunch_recommendation(api_key, city)
 
 
-    #메일 보내기
-    send_weather_and_news_email(sender_email, receiver_email, app_password, weather_info, news_list, lunch_recommendation_info)
+ #메일 보내기
+    def sendmail():
+        weather_info = get_weather(api_key, city)
+        news_list = get_news()
+        lunch_recommendation_info = lunch_recommendation(api_key, city)
+    sendemail(sender_email, receiver_email, app_password, weather_info, news_list, lunch_recommendation_info)
+
+    schedule.every().day.at("7:00").do(sendmail)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
